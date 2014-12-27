@@ -982,6 +982,15 @@ void loop() {
     else if (pressed[33]) // step repeat
     {
       seqNextStep = 0; 
+      if (justpressed[37])
+        {
+          seqCurrentStep = (seqCurrentStep - 1) % seqLength;
+        }
+        else if (justpressed[38])
+        {
+          seqCurrentStep = (seqCurrentStep + 1) % seqLength;
+          clearJust();
+        }
       clearJust();
     }
     else if (justreleased[33])
@@ -1009,7 +1018,6 @@ void loop() {
       fxFlamDecay = 10;
       clearJust();
     }
-
 
     if(save)
       savePatch();
