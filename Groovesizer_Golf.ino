@@ -1,5 +1,5 @@
 /************************************************************************
- ***   GROOVESIZER Golf v.019 - 12-Track, 32-Step MIDI Drum Sequencer
+ ***   GROOVESIZER Golf v.020 - 12-Track, 32-Step MIDI Drum Sequencer
  ***   for the GROOVESIZER 8-Bit Musical Multiboard
  ***   http://groovesizer.com
  ************************************************************************
@@ -336,7 +336,7 @@ void setup() {
   // message on boot
   for (int i = 0; i < 1000; i++)
   {
-    number = 19; // the version number
+    number = 20; // the version number
     showNumber();
     updateLeds();
   }
@@ -979,18 +979,26 @@ void loop() {
         clearJust();
       }
     }
-    else if (justpressed[33])
+    else if (pressed[33]) // step repeat
     {
-      fxFlamSet();
-      fxFlamDelay = (sixteenthDur * 2) / 3;
-      fxFlamDecay = 10;
+      seqNextStep = 0; 
       clearJust();
     }
-    else if (justpressed[34])
+    else if (justreleased[33])
     {
-      fxFlamSet();
-      fxFlamDelay = sixteenthDur;
-      fxFlamDecay = 10;
+      seqNextStep = 1;
+      seqCurrentStep = seqTrueStep;
+      clearJust();
+    }
+    else if (pressed[34]) // momentary reverse
+    {
+      seqNextStep = -1; 
+      clearJust();
+    }
+    else if (justreleased[34])
+    {
+      seqNextStep = 1;
+      seqCurrentStep = seqTrueStep;
       clearJust();
     }
 
@@ -1282,8 +1290,15 @@ void loop() {
 
       do 
       {
-        seqCurrentStep = (((seqCurrentStep - seqFirstStep) + seqNextStep)%seqLength) + seqFirstStep; // advance the step counter
-        //seqCurrentStep = (seqCurrentStep == 0) ? seqCurrentStep = seqFirstStep : seqCurrentStep;
+        if (seqNextStep >= 0)
+          seqCurrentStep = (((seqCurrentStep - seqFirstStep) + seqNextStep)%seqLength) + seqFirstStep; // advance the step counter
+        else // seqNextStep is negative
+        {
+          if ((seqCurrentStep + seqNextStep) < seqFirstStep || (seqCurrentStep + seqNextStep) > 32)
+            seqCurrentStep = seqLastStep + 1 + ((seqCurrentStep - seqFirstStep) + seqNextStep);
+          else
+            seqCurrentStep += seqNextStep;
+        }
       }
       while (checkSkip(seqCurrentStep)); // do it again if the step is marked as a skip
 
@@ -1374,6 +1389,10 @@ void loop() {
     }
   }
 }
+
+
+
+
 
 
 

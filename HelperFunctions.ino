@@ -362,9 +362,10 @@ void loadPatch(byte patchNumber) // load the specified location number
       unPackTrackBuffer(i);
     }  
 
-    // add first 7 of 14 master page bytes
+    // read first 7 of 14 master page bytes
     seqLength = rwBuffer[57];
     seqFirstStep = rwBuffer[58];
+    seqLastStep = seqFirstStep + (seqLength - 1);
     // send a program change message if the patch is not the same as the current one
     if (programChange != rwBuffer[59])
     {
@@ -386,7 +387,7 @@ void loadPatch(byte patchNumber) // load the specified location number
       unPackTrackBuffer(i);
     }
 
-    // add second 7 of 14 master page bytes
+    // read second 7 of 14 master page bytes
     swing = rwBuffer[57];
     followAction = rwBuffer[58];
     bpm = rwBuffer[59];
