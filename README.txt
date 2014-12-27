@@ -1,3 +1,7 @@
+Intro
+------------------------
+This is a mirror of the original firmware by MoShang, the source of truth for this firmware is always http://groovesizer.com/golf/ - tub
+
 Groovesizer Golf
 ------------------------
 
