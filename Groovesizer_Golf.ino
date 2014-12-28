@@ -1214,9 +1214,6 @@ void loop() {
 
     LEDrow[4] = controlLEDrow; // light the LED for the mode we're in
   }
-  // this function shifts out the the 5 bytes corresponding to the led rows
-  // declared in ShiftOut (see above)
-  updateLeds();
 
   // *************************************
   //     SEQUENCER inside the LOOP
@@ -1251,7 +1248,7 @@ void loop() {
     }
 
     if (currentTime - sixteenthStartTime >= swing16thDur)
-    { 
+    {
       //swing16thDur = (swing16thDur > sixteenthDur) ? ((2*sixteenthDur) - swing16thDur) : map(swing, 0, 255, sixteenthDur, ((2*sixteenthDur)/3)*2);
       //onDur = (onDur > swing16thDur) ? swing16thDur : onDur;
       stepGo = true;
@@ -1383,14 +1380,33 @@ void loop() {
       // send the flam note
       MIDI.sendNoteOff(track[i].midiNoteNumber, 127, track[i].midiChannel);
       MIDI.sendNoteOn(track[i].midiNoteNumber, track[i].nextFlamLevel, track[i].midiChannel);
+      lightCurrentTrack(i);
 
       // schedule the next flam
       scheduleFlam(i, track[i].nextFlamLevel); 
     }
   }
+  
+  // set LEDs for currently playing notes on each channel
+  if (!checkMute(seqCurrentStep) && firstHalfOfStep()) // don't light anything is the step is muted on the master page
+    {
+      for (byte i = 0; i < 12; i++) // for each of the tracks
+      {
+        // if the step is on or accented, then light the corresponding channel's 'F' light
+        if (checkStepAccent(i, seqCurrentStep) || checkStepOn(i, seqCurrentStep)) {
+          lightCurrentTrack(i);
+        }
+      }
+    }
+  
+  // this function shifts out the the 5 bytes corresponding to the led rows
+  // declared in ShiftOut (see above)
+  updateLeds();
 }
 
-
+boolean firstHalfOfStep(){
+  return millis() > (sixteenthStartTime + (sixteenthDur/2));
+}
 
 
 

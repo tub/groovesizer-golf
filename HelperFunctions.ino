@@ -876,14 +876,16 @@ void fxFlamSet()
   }
 }
 
-
-
-
-
-
-
-
-
+void lightCurrentTrack(int i){
+  if(i < 6 && currentTrack < 6){
+    //flip the light for this step
+    bitWrite(LEDrow[4], i + 1, !bitRead(LEDrow[4], i + 1));
+  }
+  
+  if(i > 5 && currentTrack > 5){
+    bitWrite(LEDrow[4], i - 5, !bitRead(LEDrow[4], i - 5));
+  }
+}
 
 
 
